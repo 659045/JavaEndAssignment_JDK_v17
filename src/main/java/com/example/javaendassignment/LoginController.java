@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class LoginController {
@@ -43,13 +44,13 @@ public class LoginController {
                 Stage currentStage = (Stage) btnLogin.getScene().getWindow();
                 currentStage.close();
                 FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("main.fxml"));
-                MainController mainController = new MainController(u);
-                fxmlLoader.setController(mainController);
                 Scene scene = new Scene(fxmlLoader.load(), 530, 340);
                 Stage stage = new Stage();
                 stage.setTitle("Main");
                 stage.setScene(scene);
                 stage.show();
+                MainController controller = fxmlLoader.getController();
+                controller.welcomeUser(u);
             }
             else if (Objects.equals("", txtUsername.getText())|| Objects.equals("", txtPassword.getText())){
                 lblError.setText("Please fill in all the fields");

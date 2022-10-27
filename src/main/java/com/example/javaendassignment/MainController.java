@@ -1,6 +1,5 @@
 package com.example.javaendassignment;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -8,25 +7,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
-
+import java.util.*;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 public class MainController implements Initializable {
-    private Database db = new Database();
+    private final Database db = new Database();
 
     private Item item;
-    private User user;
-
-    public MainController(User user) {
-        this.user = user;
-    }
 
     @FXML
     private Label lblWelcome, lblLendMsg, lblReceiveMsg, lblAddItemError;
@@ -45,29 +34,34 @@ public class MainController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         lendGroup.setVisible(true);
         collectionGroup.setVisible(false);
-        lblWelcome.setText(String.format("Welcome %s", user.username));
 
-        LoadCollection();
+        loadTableView();
     }
 
-    void LoadCollection(){
+    public void welcomeUser(User user){
+        lblWelcome.setText(String.format("Welcome %s", user.username));
+    }
+
+    public void loadTableView(){
         tvItems.getItems().clear();
         List<Item> items = db.getItems();
-        SetCollectionProperties();
-        items.forEach(i -> tvItems.getItems().add(i));
+        setTableViewProperties();
+
+        for (Item i: items) {
+            tvItems.getItems().add(i);
+        }
     }
 
-    void SetCollectionProperties(){
+    public void setTableViewProperties(){
         tvItems.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("id"));
         tvItems.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("status"));
         tvItems.getColumns().get(2).setCellValueFactory(new PropertyValueFactory<>("title"));
         tvItems.getColumns().get(3).setCellValueFactory(new PropertyValueFactory<>("author"));
-
     }
 
 
 
-    public void onButtonLendClick(ActionEvent actionEvent) {
+    public void onButtonLendClick() {
         try {
             if (txtLendID.getText().isEmpty() || txtLendMember.getText().isEmpty()) {
                 lblLendMsg.setText("Please fill the fields");
@@ -75,7 +69,7 @@ public class MainController implements Initializable {
             }
 
             item = db.getItemByID(Integer.parseInt(txtLendID.getText()));
-            user = db.getUserByID(Integer.parseInt(txtLendMember.getText()));
+            User user = db.getUserByID(Integer.parseInt(txtLendMember.getText()));
 
             if (item != null && Objects.equals(item.status, true) && user != null) {
                 db.setItemStatusFalse(item);
@@ -93,7 +87,7 @@ public class MainController implements Initializable {
         }
     }
 
-    public void onButtonReceiveClick(ActionEvent actionEvent) {
+    public void onButtonReceiveClick() {
         try{
             if (Objects.equals(txtReceiveID.getText(), "")){
                 lblReceiveMsg.setText("Please enter a item code");
@@ -127,32 +121,32 @@ public class MainController implements Initializable {
         }
     }
 
-    public void onButtonLendTabClick(ActionEvent actionEvent) {
+    public void onButtonLendTabClick() {
         hideAllGroups();
         lendGroup.setVisible(true);
     }
 
-    public void onButtonCollectionClick(ActionEvent actionEvent) {
+    public void onButtonCollectionClick() {
         hideAllGroups();
         collectionGroup.setVisible(true);
     }
 
-    public void onButtonMembersClick(ActionEvent actionEvent) {
+    public void onButtonMembersClick() {
 
     }
 
-    public void onButtonAddItemClick(ActionEvent actionEvent) {
+    public void onButtonAddItemClick() {
         hideAllGroups();
         addItemGroup.setVisible(true);
     }
 
-    public void onButtonEditItemClick(ActionEvent actionEvent) {
+    public void onButtonEditItemClick() {
     }
 
-    public void onButtonDeleteItemClick(ActionEvent actionEvent) {
+    public void onButtonDeleteItemClick() {
     }
 
-    public void onButtonAddItemToTableView(ActionEvent actionEvent) {
+    public void onButtonAddItemToTableView() {
         try {
             int id = Integer.parseInt(txtAddItemCode.getText());
             boolean status = true;
@@ -181,7 +175,7 @@ public class MainController implements Initializable {
         }
     }
 
-    public void onButtonCancelItemToTableView(ActionEvent actionEvent) {
+    public void onButtonCancelItemToTableView() {
         clearAddItemTextFields();
         hideAllGroups();
         collectionGroup.setVisible(true);
