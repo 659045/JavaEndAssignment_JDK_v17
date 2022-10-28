@@ -1,8 +1,7 @@
 package com.example.javaendassignment;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Objects;
 
 public class Database {
@@ -14,7 +13,7 @@ public class Database {
 
     public Item getItemByID(int id){
         for (Item i: items) {
-            if (Objects.equals(i.id, id)){
+            if (Objects.equals(i.getId(), id)){
                 return i;
             }
         }
@@ -23,23 +22,37 @@ public class Database {
 
     public User getUserByID(int id){
         for (User u: users) {
-            if (Objects.equals(u.id, id)){
+            if (Objects.equals(u.getId(), id)){
                 return u;
             }
         }
         return null;
     }
 
-    public void setItemStatusFalse(Item item){
-        item.status = false;
-    }
-
-    Date d1 = new Date(2000, Calendar.OCTOBER,10);
-
     public Database() {
-        users.add(new User(1, "J", "1", d1));
-        users.add(new User(2, "David", "1234", d1));
+        users.add(new User(1, "J", "Jason", "Xie", "1", LocalDate.of(2000, 1, 1)));
+        users.add(new User(2, "David", "David", "Hoff", "1234", LocalDate.of(2000, 1, 1)));
         items.add(new Item(1, true, "Java Book", "Jack the Great"));
         items.add(new Item(2, true, "CSS Book", "Zac Wills"));
+    }
+
+    public int generateNextID(String object){
+        int highestValue = 0;
+        if (Objects.equals(object, "item")){
+            for (Item i: items) {
+                if (i.getId() > highestValue){
+                    highestValue = i.getId();
+                }
+            }
+        }
+        else {
+            for (User u : users) {
+                if (u.getId() > highestValue){
+                    highestValue = u.getId();
+                }
+            }
+        }
+
+        return highestValue + 1;
     }
 }

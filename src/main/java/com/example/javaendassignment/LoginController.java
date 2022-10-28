@@ -40,7 +40,7 @@ public class LoginController {
 
     private void checkLogin(ArrayList<User> users) throws IOException {
         for (User u: users) {
-            if(Objects.equals(u.username, txtUsername.getText()) && Objects.equals(u.password, txtPassword.getText())){
+            if(Objects.equals(u.getUsername(), txtUsername.getText()) && Objects.equals(u.getPassword(), txtPassword.getText())){
                 Stage currentStage = (Stage) btnLogin.getScene().getWindow();
                 currentStage.close();
                 FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("main.fxml"));
