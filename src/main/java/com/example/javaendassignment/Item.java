@@ -1,8 +1,12 @@
 package com.example.javaendassignment;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
-public class Item {
+public class Item implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private int id;
     private boolean status;
     private String title;
@@ -13,8 +17,11 @@ public class Item {
         return id;
     }
 
-    public boolean getStatus() {
-        return status;
+    public String getStatus() {
+        if (Objects.equals(status, true))
+        return "Yes";
+        else
+            return "No";
     }
 
     public void setStatus(boolean status) {
@@ -25,8 +32,16 @@ public class Item {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getAuthor() {
         return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public LocalDate getDate() {

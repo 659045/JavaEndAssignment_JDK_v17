@@ -27,8 +27,7 @@
         <TextField fx:id="txtLendMember" layoutX="27.0" layoutY="113.0" promptText="Member Identifier" />
         <Button fx:id="btnLend" layoutX="27.0" layoutY="193.0" mnemonicParsing="false" onAction="#onButtonLendClick" prefHeight="25.0" prefWidth="90.0" text="Lend Item" />
         <Button fx:id="btnReceive" layoutX="246.0" layoutY="193.0" mnemonicParsing="false" onAction="#onButtonReceiveClick" prefHeight="25.0" prefWidth="90.0" text="Receive Item" />
-        <Label fx:id="lblLendMsg" layoutX="27.0" layoutY="160.0" prefHeight="17.0" prefWidth="149.0" />
-        <Label fx:id="lblReceiveMsg" layoutX="246.0" layoutY="160.0" prefHeight="17.0" prefWidth="149.0" />
+        <Label fx:id="lblLendReceiveMsg" layoutX="27.0" layoutY="160.0" prefHeight="17.0" prefWidth="209.0" />
     </Group>
     <Group fx:id="collectionGroup" layoutX="6.0" layoutY="16.0" visible="false">
         <Label layoutX="29.0" layoutY="62.0" text="Items">
@@ -47,13 +46,14 @@
                 <TableColumn fx:id="colAuthor" minWidth="0.79998779296875" prefWidth="103.20001220703125" text="Author" />
             </columns>
         </TableView>
+      <Label fx:id="lblTableViewItemsError" layoutX="311.0" layoutY="283.0" prefHeight="17.0" prefWidth="161.0" textFill="#ff5454" />
     </Group>
    <Group fx:id="addItemGroup" layoutX="49.0" layoutY="106.0" visible="false">
       <children>
            <TextField fx:id="txtAddItemTitle" promptText="Title" />
            <TextField fx:id="txtAddItemAuthor" layoutX="241.0" promptText="Author" />
-           <Button fx:id="btnAddItemToTableView" layoutY="160.0" mnemonicParsing="false" onAction="#onButtonAddItemToTableView" prefHeight="30.0" prefWidth="97.0" text="Add" />
-           <Button fx:id="btnCancelItemToTableView" layoutX="133.0" layoutY="160.0" mnemonicParsing="false" onAction="#onButtonCancelItemToTableView" prefHeight="30.0" prefWidth="97.0" text="Cancel" />
+           <Button fx:id="btnConfirmAddItem" layoutY="160.0" mnemonicParsing="false" onAction="#onButtonConfirmAddItemClick" prefHeight="30.0" prefWidth="97.0" text="Add" />
+           <Button fx:id="btnCancelAddItem" layoutX="133.0" layoutY="160.0" mnemonicParsing="false" onAction="#onButtonCancelAddItem" prefHeight="30.0" prefWidth="97.0" text="Cancel" />
            <Label fx:id="lblAddItemError" layoutX="1.0" layoutY="116.0" prefHeight="17.0" prefWidth="230.0" />
       </children>
    </Group>
@@ -75,18 +75,41 @@
          <Button fx:id="btnAddMember" layoutX="9.0" layoutY="219.0" mnemonicParsing="false" onAction="#onButtonAddMemberClick" prefHeight="25.0" prefWidth="104.0" text="Add Member" />
          <Button fx:id="btnEditMember" layoutX="119.0" layoutY="219.0" mnemonicParsing="false" onAction="#onButtonEditMemberClick" prefHeight="25.0" prefWidth="104.0" text="Edit Member" />
          <Button fx:id="btnDeleteMember" layoutX="229.0" layoutY="219.0" mnemonicParsing="false" onAction="#onButtonDeleteMemberClick" prefHeight="25.0" prefWidth="104.0" text="Delete Member" />
+         <Label fx:id="lblTableViewMembersError" layoutX="348.0" layoutY="223.0" prefHeight="17.0" prefWidth="141.0" textFill="#ff4f4f" />
       </children>
    </Group>
-   <Group fx:id="addMemberGroup" layoutX="49.0" layoutY="106.0">
+   <Group fx:id="addMemberGroup" layoutX="49.0" layoutY="106.0" visible="false">
       <children>
-         <Button fx:id="btnAddMemberToTableView" layoutY="160.0" mnemonicParsing="false" onAction="#onButtonAddMemberToTableViewClick" prefHeight="32.0" prefWidth="97.0" text="Add" />
-         <Button fx:id="btnCancelMemberToTableView" layoutX="133.0" layoutY="160.0" mnemonicParsing="false" onAction="#onButtonCancelMemberToTableViewClick" prefHeight="31.0" prefWidth="97.0" text="Cancel" />
+         <Button fx:id="btnConfirmAddMember" layoutY="160.0" mnemonicParsing="false" onAction="#onButtonConfirmAddMemberClick" prefHeight="32.0" prefWidth="97.0" text="Add" />
+         <Button fx:id="btnCancelAddMember" layoutX="133.0" layoutY="160.0" mnemonicParsing="false" onAction="#onButtonCancelAddMemberClick" prefHeight="32.0" prefWidth="97.0" text="Cancel" />
          <TextField fx:id="txtAddMemberFirstName" layoutY="53.0" promptText="First Name" />
          <TextField fx:id="txtAddMemberLastName" layoutX="241.0" layoutY="53.0" promptText="Last Name" />
          <TextField fx:id="txtAddMemberUsername" promptText="Username" />
          <TextField fx:id="txtAddMemberPassword" layoutX="241.0" promptText="Password" />
          <DatePicker fx:id="datePicker" layoutX="241.0" layoutY="106.0" prefHeight="25.0" prefWidth="149.0" promptText="Select Birth Date" />
          <Label fx:id="lblAddMemberError" layoutY="110.0" prefHeight="17.0" prefWidth="170.0" textFill="#ff3c3c" />
+      </children>
+   </Group>
+   <Group fx:id="editItemGroup" layoutX="49.0" layoutY="105.0" visible="false">
+      <children>
+         <Button fx:id="btnConfirmItemEdit" layoutY="160.0" mnemonicParsing="false" onAction="#onButtonConfirmEditItemClick" prefHeight="32.0" prefWidth="97.0" text="Edit Item" />
+         <Button fx:id="btnCancelItemEdit" layoutX="133.0" layoutY="160.0" mnemonicParsing="false" onAction="#onButtonCancelEditItemClick" prefHeight="32.0" prefWidth="97.0" text="Cancel" />
+         <TextField fx:id="txtEditItemTitle" layoutY="2.0" promptText="New Title" />
+         <TextField fx:id="txtEditItemAuthor" layoutX="241.0" promptText="New Author" />
+         <Label fx:id="lblEditItemError" layoutY="111.0" prefHeight="17.0" prefWidth="195.0" text="Label" />
+         <TextField fx:id="txtEditItemAvailability" layoutY="58.0" promptText="Availability Yes/No" />
+      </children>
+   </Group>
+   <Group fx:id="editMemberGroup" layoutX="49.0" layoutY="106.0">
+      <children>
+         <Button fx:id="btnConfirmEditMember" layoutY="160.0" mnemonicParsing="false" onAction="#onButtonConfirmEditMemberClick" prefHeight="25.0" prefWidth="90.0" text="Edit Member" />
+         <Button fx:id="btnCancelEditMember" layoutX="106.0" layoutY="160.0" mnemonicParsing="false" onAction="#onButtonCancelEditMemberClick" prefHeight="25.0" prefWidth="90.0" text="Cancel" />
+         <TextField fx:id="txtEditMemberUsername" promptText="New Username" />
+         <TextField fx:id="txtEditMemberPassword" layoutX="241.0" promptText="New Password" />
+         <TextField fx:id="txtEditMemberFirstName" layoutY="56.0" promptText="New First Name" />
+         <TextField fx:id="txtEditMemberLastName" layoutX="241.0" layoutY="56.0" promptText="New Last Name" />
+         <DatePicker fx:id="datePickerEditMember" layoutX="240.0" layoutY="112.0" prefHeight="25.0" prefWidth="149.0" promptText="New Birth Date" />
+         <Label fx:id="lblEditMemberError" layoutY="116.0" prefHeight="17.0" prefWidth="217.0" text="Label" />
       </children>
    </Group>
 </Pane>

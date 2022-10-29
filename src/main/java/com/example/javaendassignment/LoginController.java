@@ -2,6 +2,7 @@ package com.example.javaendassignment;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,11 +11,13 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
-public class LoginController {
+public class LoginController implements Initializable {
 
     Database db = new Database();
 
@@ -31,6 +34,9 @@ public class LoginController {
 
     @FXML
     private PasswordField txtPassword;
+
+    public LoginController() throws IOException {
+    }
 
     @FXML
     protected void onButtonLoginClick() throws IOException {
@@ -59,5 +65,10 @@ public class LoginController {
                 lblError.setText("Incorrect Login Credentials");
             }
         }
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        db.readFromFile();
     }
 }
