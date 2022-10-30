@@ -363,7 +363,7 @@ public class MainController implements Initializable {
                 return;
             }
 
-            user = new User(id, username, firstName, lastName, password, birthday);
+            user = new User(id, username, firstName, lastName, password, birthday, User.Type.Member);
 
             lblAddMemberError.setText(String.format("user %s has been added", username));
             clearAllInputs();

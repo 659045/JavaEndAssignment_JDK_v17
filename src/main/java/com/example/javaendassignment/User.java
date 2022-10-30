@@ -17,6 +17,11 @@ public class User implements Serializable {
     private String password;
     private LocalDate birthday;
 
+    private Type type;
+
+    public enum Type {User, Member}
+
+
     public int getId() {
         return id;
     }
@@ -62,12 +67,17 @@ public class User implements Serializable {
         this.birthday = birthday;
     }
 
-    public User(int id, String username, String firstName, String lastName, String password, LocalDate birthday) {
+    public Type getType() {
+        return type;
+    }
+
+    public User(int id, String username, String firstName, String lastName, String password, LocalDate birthday, Type type) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.birthday = birthday;
+        this.type = type;
     }
 }

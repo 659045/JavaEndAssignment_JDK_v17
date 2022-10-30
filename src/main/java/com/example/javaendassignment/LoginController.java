@@ -51,7 +51,9 @@ public class LoginController implements Initializable {
 
     private void checkLogin(ArrayList<User> users) throws IOException {
         for (User u: users) {
-            if(Objects.equals(u.getUsername(), txtUsername.getText()) && Objects.equals(u.getPassword(), txtPassword.getText())){
+            System.out.println(u.getType());
+
+            if(Objects.equals(u.getUsername(), txtUsername.getText()) && Objects.equals(u.getPassword(), txtPassword.getText()) && Objects.equals(u.getType(), User.Type.User)){
                 Stage currentStage = (Stage) btnLogin.getScene().getWindow();
                 currentStage.close();
                 FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("main.fxml"));

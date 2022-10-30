@@ -54,8 +54,8 @@ public class Database {
     }
 
     public Database() {
-        users.add(new User(generateNextID("user"), "J", "Jason", "Xie", "1", LocalDate.of(2000, 10,10)));
-        users.add(new User(generateNextID("user"), "David", "David", "Wu", "david123", LocalDate.of(2000, 10,10)));
+        users.add(new User(generateNextID("user"), "J", "Jason", "Xie", "1", LocalDate.of(2000, 10,10), User.Type.User));
+        users.add(new User(generateNextID("user"), "David", "David", "Wu", "david123", LocalDate.of(2000, 10,10), User.Type.Member));
         items.add(new Item(generateNextID("item"), true, "Book1", "Author1"));
         items.add(new Item(generateNextID("item"), true, "Book2", "Author2"));
     }
