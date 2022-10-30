@@ -2,7 +2,6 @@ package com.example.javaendassignment;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -19,8 +18,6 @@ public class MainController implements Initializable {
     private Item item;
 
     private User user;
-
-    private ArrayList<Object> objects;
 
     @FXML
     private Label lblWelcome, lblLendReceiveMsg, lblAddItemError, lblTableViewItemsError, lblTableViewMembersError,  lblEditItemError, lblAddMemberError, lblEditMemberError;
@@ -63,8 +60,15 @@ public class MainController implements Initializable {
     //shows the lend tab and loads the table view
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        hideAllGroupsAndSetVisible(lendGroup);
-        loadTableView();
+        try {
+            hideAllGroupsAndSetVisible(lendGroup);
+            db.readItemsFromFile();
+            db.readUsersFromFile();
+            loadTableView();
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     //sets welcome user text
@@ -140,12 +144,11 @@ public class MainController implements Initializable {
                 return;
             }
 
-            if (Objects.equals(item.getStatus(), true)) {
-                item.setStatus(false);
-                item.setDate(LocalDate.now());
+            if (Objects.equals(item.getStatus(), "Yes")) {
                 lblLendReceiveMsg.setText(String.format("Item %s has been lend", item.getId()));
-                loadTableView();
+                db.LendItem(item);
                 clearAllInputs();
+                loadTableView();
             } else{
                 lblLendReceiveMsg.setText(String.format("Item %s is unavailable", item.getId()));
             }
@@ -169,7 +172,7 @@ public class MainController implements Initializable {
                 return;
             }
 
-            if (Objects.equals(item.getStatus(), false)){
+            if (Objects.equals(item.getStatus(), "No")){
 
                 if (DAYS.between(item.getDate(), LocalDate.now()) > 21){
                     int days = (int) (DAYS.between(item.getDate(), LocalDate.now()) - 21);
@@ -178,10 +181,9 @@ public class MainController implements Initializable {
                 }
 
                 lblLendReceiveMsg.setText(String.format("Item %s has been received", item.getId()));
-                loadTableView();
+                db.ReceiveItem(item);
                 clearAllInputs();
-                item.setDate(null);
-                item.setStatus(true);
+                loadTableView();
                 return;
             }
             lblLendReceiveMsg.setText(String.format("Item %s is available", item.getId()));
@@ -202,24 +204,31 @@ public class MainController implements Initializable {
     }
 
     public void onButtonEditItemClick() {
-        item = tvItems.getSelectionModel().getSelectedItem();
-        if (Objects.equals(item, null)){
-            lblTableViewItemsError.setText("Select ab item to edit");
-            return;
+        try {
+            item = tvItems.getSelectionModel().getSelectedItem();
+            db.getItems().remove(item);
+            if (Objects.equals(item, null)) {
+                lblTableViewItemsError.setText("Select ab item to edit");
+                return;
+            }
+            hideAllGroupsAndSetVisible(editItemGroup);
         }
-        hideAllGroupsAndSetVisible(editItemGroup);
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     //implemented through https://stackoverflow.com/questions/34857007/how-to-delete-row-from-table-column-javafx
     public void onButtonDeleteItemClick() {
-        Item selectedItem = tvItems.getSelectionModel().getSelectedItem();
-        if (Objects.equals(selectedItem, null)){
-            lblTableViewItemsError.setText("Select an item to delete");
-            return;
+        try {
+            int selectedItem = tvItems.getSelectionModel().getSelectedIndex();
+            tvItems.getItems().remove(selectedItem);
+            db.getItems().remove(selectedItem);
+            db.writeItemsToFile();
         }
-        tvItems.getItems().remove(selectedItem);
-        db.getItems().remove(selectedItem);
-        db.writeToFile();
+        catch(Exception e){
+            lblTableViewItemsError.setText("Select an item to delete");
+        }
     }
 
     //Collection add buttons
@@ -235,15 +244,11 @@ public class MainController implements Initializable {
                 return;
             }
 
-            ArrayList<Item> items = db.getItems();
             Item item = new Item(id, status, title, author);
-            items.add(item);
 
             lblAddItemError.setText("Item Added");
             clearAllInputs();
-            db.updateItems(item);
-            db.clearFile();
-            db.writeToFile();
+            db.AddItem(item);
             loadTableView();
         }
         catch (Exception e){
@@ -265,116 +270,154 @@ public class MainController implements Initializable {
 
     //Collections edit buttons
     public void onButtonConfirmEditItemClick() {
-            if (!txtEditItemTitle.getText().isEmpty() && !txtEditItemAuthor.getText().isEmpty() && !txtEditItemAvailability.getText().isEmpty()){
-                item.setTitle(txtEditItemTitle.getText());
-                item.setAuthor(txtEditItemAuthor.getText());
-
-                if (Objects.equals(txtEditItemAvailability.getText(), "Yes")){
-                    item.setStatus(true);
-                }
-                else if (Objects.equals(txtEditItemAvailability.getText(), "No")){
-                    item.setStatus(false);
-                }
-                else{
+        try {
+            boolean status;
+            if (!txtEditItemTitle.getText().isEmpty() && !txtEditItemAuthor.getText().isEmpty() && !txtEditItemAvailability.getText().isEmpty()) {
+                if (Objects.equals(txtEditItemAvailability.getText(), "Yes")) {
+                    status = true;
+                } else if (Objects.equals(txtEditItemAvailability.getText(), "No")) {
+                    status = false;
+                } else {
                     lblEditItemError.setText("Incorrect Availability: Yes/No");
                     return;
                 }
 
+                Item item = new Item(db.generateNextID("item"), status, txtEditItemTitle.getText(), txtEditItemAuthor.getText());
+
+
+
+
                 lblEditItemError.setText("Item has successfully been edited");
                 clearAllInputs();
+                db.AddItem(item);
                 loadTableView();
-                db.writeToFile();
-            }
-            else
+            } else
                 lblEditItemError.setText("Please fill in all fields");
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     public void onButtonCancelEditItemClick() {
-        clearAllInputs();
-        hideAllGroupsAndSetVisible(collectionGroup);
-        lblTableViewItemsError.setText("");
+        try{
+            clearAllInputs();
+            hideAllGroupsAndSetVisible(collectionGroup);
+            lblTableViewItemsError.setText("");
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     //Members buttons
     //displays the add member components
     public void onButtonAddMemberClick() {
-        hideAllGroupsAndSetVisible(addMemberGroup);
+        try {
+            hideAllGroupsAndSetVisible(addMemberGroup);
+        }
+       catch (Exception e){
+            throw new RuntimeException(e);
+       }
     }
 
     public void onButtonEditMemberClick() {
-        User user = tvMembers.getSelectionModel().getSelectedItem();
+        try{
+        user = tvMembers.getSelectionModel().getSelectedItem();
+        db.getUsers().remove(user);
         if (Objects.equals(user, null)){
             lblTableViewMembersError.setText("Select a member to edit");
             return;
         }
         hideAllGroupsAndSetVisible(editMemberGroup);
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     //implemented through https://stackoverflow.com/questions/34857007/how-to-delete-row-from-table-column-javafx
-    public void onButtonDeleteMemberClick(ActionEvent actionEvent) {
-        User selectedUser = tvMembers.getSelectionModel().getSelectedItem();
-        if (Objects.equals(selectedUser, null)){
-            lblTableViewMembersError.setText("Select a member to delete");
-            return;
+    public void onButtonDeleteMemberClick() {
+        try {
+            User selectedUser = tvMembers.getSelectionModel().getSelectedItem();
+            if (Objects.equals(selectedUser, null)) {
+                lblTableViewMembersError.setText("Select a member to delete");
+                return;
+            }
+            tvMembers.getItems().remove(selectedUser);
+            db.getUsers().remove(selectedUser);
+            db.writeUsersToFile();
         }
-        tvMembers.getItems().remove(selectedUser);
-        db.getUsers().remove(selectedUser);
-        db.writeToFile();
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     //Members add buttons
     public void onButtonConfirmAddMemberClick() {
-        int id = db.generateNextID("user");
-        String username = txtAddMemberUsername.getText();
-        String password = txtAddMemberPassword.getText();
-        String firstName = txtAddMemberFirstName.getText();
-        String lastName = txtAddMemberLastName.getText();
-        LocalDate birthday = datePicker.getValue();
+        try {
+            int id = db.generateNextID("user");
+            String username = txtAddMemberUsername.getText();
+            String password = txtAddMemberPassword.getText();
+            String firstName = txtAddMemberFirstName.getText();
+            String lastName = txtAddMemberLastName.getText();
+            LocalDate birthday = datePicker.getValue();
 
-        if (Objects.equals(username, "") || Objects.equals(password, "") || Objects.equals(firstName, "") || Objects.equals(lastName, "") || Objects.equals(birthday, null)){
-            lblAddMemberError.setText("Please fill in all fields");
-            return;
+            if (Objects.equals(username, "") || Objects.equals(password, "") || Objects.equals(firstName, "") || Objects.equals(lastName, "") || Objects.equals(birthday, null)) {
+                lblAddMemberError.setText("Please fill in all fields");
+                return;
+            }
+
+            user = new User(id, username, firstName, lastName, password, birthday);
+
+            lblAddMemberError.setText(String.format("user %s has been added", username));
+            clearAllInputs();
+            db.AddUser(user);
+            loadTableView();
         }
-
-        user = new User(id, username, firstName, lastName, password, birthday);
-        ArrayList<User> users = db.getUsers();
-        users.add(user);
-
-        lblAddMemberError.setText(String.format("user %s has been added", username));
-        loadTableView();
-        clearAllInputs();
-        db.writeToFile();
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     //btnCancel pressed go back to TableView
     public void onButtonCancelAddMemberClick() {
-        clearAllInputs();
-        hideAllGroupsAndSetVisible(membersGroup);
+        try {
+            clearAllInputs();
+            hideAllGroupsAndSetVisible(membersGroup);
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     //Member edit buttons
     public void onButtonConfirmEditMemberClick() {
-        if (!txtEditMemberUsername.getText().isEmpty() && !txtEditMemberPassword.getText().isEmpty() &&
-                !txtEditMemberFirstName.getText().isEmpty() && !txtEditMemberLastName.getText().isEmpty() && Objects.equals(datePickerEditMember.getValue(), null)){
-            user.setUsername(txtEditMemberUsername.getText());
-            user.setPassword(txtEditMemberPassword.getText());
-            user.setFirstName(txtEditMemberFirstName.getText());
-            user.setLastName(txtEditMemberLastName.getText());
-            user.setBirthday(datePickerEditMember.getValue());
+        try {
+            if (!Objects.equals(txtEditMemberUsername.getText(), "") && !Objects.equals(txtEditMemberPassword.getText(), "") && !Objects.equals(txtEditMemberFirstName.getText(), "") && !Objects.equals(txtEditMemberLastName.getText(), "") && !Objects.equals(datePickerEditMember.getValue(), null)) {
+                User user = new User(db.generateNextID("user"), txtEditMemberUsername.getText(), txtEditMemberPassword.getText(), txtEditMemberFirstName.getText(), txtEditMemberLastName.getText(), datePickerEditMember.getValue());
 
-            lblEditMemberError.setText("Member has successfully been edited");
-            clearAllInputs();
-            loadTableView();
-            db.writeToFile();
+                lblEditMemberError.setText("Member has successfully been edited");
+                clearAllInputs();
+                db.AddUser(user);
+                loadTableView();
+            } else {
+                lblEditMemberError.setText("Please fill in all fields");
+            }
         }
-        else{
-            lblEditMemberError.setText("Please fill in all fields");
+        catch(Exception e){
+            throw new RuntimeException(e);
         }
     }
 
     public void onButtonCancelEditMemberClick() {
-        clearAllInputs();
-        hideAllGroupsAndSetVisible(membersGroup);
+        try{
+            clearAllInputs();
+            hideAllGroupsAndSetVisible(membersGroup);
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     //hides all the groups

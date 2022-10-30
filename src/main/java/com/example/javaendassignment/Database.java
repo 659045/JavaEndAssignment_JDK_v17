@@ -1,33 +1,40 @@
 package com.example.javaendassignment;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class Database {
 
-    private ArrayList<User> users = new ArrayList<>();
+    private final ArrayList<User> users = new ArrayList<>();
     private final ArrayList<Item> items = new ArrayList<>();
-
-    private final ArrayList<Object> objects = new ArrayList<>();
 
     public ArrayList<User> getUsers(){ return users; }
     public ArrayList<Item> getItems(){ return items; }
 
-    public ArrayList<Item> updateItems(Item item){
-        items.add(item);
-        objects.add(item);
-        return items;
+    public void LendItem(Item item){
+        item.setStatus(false);
+        item.setDate(LocalDate.now());
+        writeItemsToFile();
     }
 
-    public ArrayList<User> updateUsers(User user){
+    public void ReceiveItem(Item item){
+        item.setStatus(true);
+        item.setDate(null);
+        writeItemsToFile();
+    }
+
+    public void AddItem(Item item){
+        items.add(item);
+        writeItemsToFile();
+        //readItemsFromFile();
+    }
+
+    public void AddUser(User user){
         users.add(user);
-        objects.add(user);
-        return users;
+        writeUsersToFile();
+        //readUsersFromFile();
     }
 
     public Item getItemByID(int id){
@@ -49,21 +56,6 @@ public class Database {
     }
 
     public Database() {
-//        users.add(new User(1, "J", "Jason", "Xie", "1", LocalDate.of(2000, 1, 1)));
-//        users.add(new User(2, "David", "David", "Hoff", "1234", LocalDate.of(2000, 1, 1)));
-//        items.add(new Item(1, true, "Java Book", "Jack the Great"));
-//        items.add(new Item(2, true, "CSS Book", "Zac Wills"));
-
-        for (Item i: items) {
-            objects.add(i);
-        }
-
-        for (User u: users) {
-            objects.add(u);
-        }
-    }
-
-    public void update(){
 
     }
 
@@ -83,46 +75,44 @@ public class Database {
                 }
             }
         }
-
         return highestValue + 1;
     }
 
-    public void writeToFile(){
-        try (FileOutputStream fos = new FileOutputStream("objects.dat");
+
+    public void writeUsersToFile(){
+        try (FileOutputStream fos = new FileOutputStream("users.dat");
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
 
-            for (Object item: objects) {
-                oos.writeObject(item);
+            for(User u : users){
+                oos.writeObject(u);
             }
-        } catch (FileNotFoundException e) {
-            System.out.println(e);
+
         } catch (IOException e) {
-            System.out.println(e);
+            throw new RuntimeException(e);
         }
     }
 
-    public void clearFile(){
-        try {
-            OutputStream os;
-            os = Files.newOutputStream(Path.of("objects.dat"));
-            os.close();
-        } catch (IOException io) {
-            System.out.println("could not clear file");
+    public void writeItemsToFile(){
+        try (FileOutputStream fos = new FileOutputStream("items.dat");
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+
+            for(Item i : items){
+                oos.writeObject(i);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void readFromFile(){
+    public void readItemsFromFile(){
+        items.clear();
         try (ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream("objects.dat"))) {
+                new FileInputStream("items.dat"))) {
             while (true) {
                 try {
-                    Object item = ois.readObject();
-                    if (item.getClass() == Item.class){
-                        items.add((Item)item);
-                    }
-                    else{
-                        users.add((User)item);
-                    }
+                        Item item = (Item) ois.readObject();
+                        items.add(item);
                 } catch (EOFException e) {
                     break;
                 } catch (ClassNotFoundException e) {
@@ -130,9 +120,30 @@ public class Database {
                 }
             }
         } catch (FileNotFoundException e) {
-            System.out.println(e);
+            throw new RuntimeException(e);
         } catch (IOException e) {
-            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void readUsersFromFile(){
+        users.clear();
+        try (ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream("users.dat"))) {
+            while (true) {
+                try {
+                        User user = (User) ois.readObject();
+                        users.add(user);
+                } catch (EOFException e) {
+                    break;
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

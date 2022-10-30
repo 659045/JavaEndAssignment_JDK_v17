@@ -35,14 +35,16 @@ public class LoginController implements Initializable {
     @FXML
     private PasswordField txtPassword;
 
-    public LoginController() throws IOException {
-    }
-
     @FXML
     protected void onButtonLoginClick() throws IOException {
         checkLogin(users);
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        db.readItemsFromFile();
+        db.readUsersFromFile();
+    }
 
     private void checkLogin(ArrayList<User> users) throws IOException {
         for (User u: users) {
@@ -65,10 +67,5 @@ public class LoginController implements Initializable {
                 lblError.setText("Incorrect Login Credentials");
             }
         }
-    }
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        db.readFromFile();
     }
 }

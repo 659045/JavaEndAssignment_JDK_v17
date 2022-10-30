@@ -6,11 +6,10 @@ import java.util.Objects;
 
 public class Item implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private int id;
+    private final int id;
     private boolean status;
-    private String title;
-    private String author;
+    private final String title;
+    private final String author;
     private LocalDate date;
 
     public int getId() {
@@ -18,30 +17,25 @@ public class Item implements Serializable {
     }
 
     public String getStatus() {
-        if (Objects.equals(status, true))
+        if (Objects.equals(status, true)){
         return "Yes";
-        else
+        }
+        else{
             return "No";
+        }
     }
 
     public void setStatus(boolean status) {
         this.status = status;
     }
 
+
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getAuthor() {
         return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
     }
 
     public LocalDate getDate() {
