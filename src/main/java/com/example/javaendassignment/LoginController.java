@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -35,15 +34,19 @@ public class LoginController implements Initializable {
     @FXML
     private PasswordField txtPassword;
 
-    @FXML
-    protected void onButtonLoginClick() throws IOException {
-        checkLogin(users);
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         db.readItemsFromFile();
         db.readUsersFromFile();
+    }
+
+    public void onButtonLoginClick() {
+        try {
+            checkLogin(users);
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     private void checkLogin(ArrayList<User> users) throws IOException {

@@ -206,7 +206,6 @@ public class MainController implements Initializable {
     public void onButtonEditItemClick() {
         try {
             item = tvItems.getSelectionModel().getSelectedItem();
-            db.getItems().remove(item);
             if (Objects.equals(item, null)) {
                 lblTableViewItemsError.setText("Select ab item to edit");
                 return;
@@ -271,25 +270,22 @@ public class MainController implements Initializable {
     //Collections edit buttons
     public void onButtonConfirmEditItemClick() {
         try {
-            boolean status;
             if (!txtEditItemTitle.getText().isEmpty() && !txtEditItemAuthor.getText().isEmpty() && !txtEditItemAvailability.getText().isEmpty()) {
                 if (Objects.equals(txtEditItemAvailability.getText(), "Yes")) {
-                    status = true;
+                    item.setStatus(true);
                 } else if (Objects.equals(txtEditItemAvailability.getText(), "No")) {
-                    status = false;
+                    item.setStatus(false);
                 } else {
                     lblEditItemError.setText("Incorrect Availability: Yes/No");
                     return;
                 }
 
-                Item item = new Item(db.generateNextID("item"), status, txtEditItemTitle.getText(), txtEditItemAuthor.getText());
-
-
-
+                item.setTitle(txtEditItemTitle.getText());
+                item.setAuthor(txtEditItemAuthor.getText());
 
                 lblEditItemError.setText("Item has successfully been edited");
                 clearAllInputs();
-                db.AddItem(item);
+                db.writeItemsToFile();
                 loadTableView();
             } else
                 lblEditItemError.setText("Please fill in all fields");
@@ -323,16 +319,15 @@ public class MainController implements Initializable {
 
     public void onButtonEditMemberClick() {
         try{
-        user = tvMembers.getSelectionModel().getSelectedItem();
-        db.getUsers().remove(user);
-        if (Objects.equals(user, null)){
-            lblTableViewMembersError.setText("Select a member to edit");
-            return;
-        }
-        hideAllGroupsAndSetVisible(editMemberGroup);
-        }
-        catch(Exception e){
-            throw new RuntimeException(e);
+            user = tvMembers.getSelectionModel().getSelectedItem();
+            if (Objects.equals(user, null)){
+                lblTableViewMembersError.setText("Select a member to edit");
+                return;
+            }
+            hideAllGroupsAndSetVisible(editMemberGroup);
+            }
+            catch(Exception e){
+                throw new RuntimeException(e);
         }
     }
 
@@ -395,11 +390,15 @@ public class MainController implements Initializable {
     public void onButtonConfirmEditMemberClick() {
         try {
             if (!Objects.equals(txtEditMemberUsername.getText(), "") && !Objects.equals(txtEditMemberPassword.getText(), "") && !Objects.equals(txtEditMemberFirstName.getText(), "") && !Objects.equals(txtEditMemberLastName.getText(), "") && !Objects.equals(datePickerEditMember.getValue(), null)) {
-                User user = new User(db.generateNextID("user"), txtEditMemberUsername.getText(), txtEditMemberPassword.getText(), txtEditMemberFirstName.getText(), txtEditMemberLastName.getText(), datePickerEditMember.getValue());
+                user.setUsername(txtEditMemberUsername.getText());
+                user.setPassword(txtEditMemberPassword.getText());
+                user.setFirstName(txtEditMemberFirstName.getText());
+                user.setLastName(txtEditMemberLastName.getText());
+                user.setBirthday(datePickerEditMember.getValue());
 
                 lblEditMemberError.setText("Member has successfully been edited");
                 clearAllInputs();
-                db.AddUser(user);
+                db.writeUsersToFile();
                 loadTableView();
             } else {
                 lblEditMemberError.setText("Please fill in all fields");

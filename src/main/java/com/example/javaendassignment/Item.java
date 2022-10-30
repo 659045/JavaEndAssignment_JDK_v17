@@ -6,10 +6,12 @@ import java.util.Objects;
 
 public class Item implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private final int id;
     private boolean status;
-    private final String title;
-    private final String author;
+    private String title;
+    private String author;
     private LocalDate date;
 
     public int getId() {
@@ -34,8 +36,16 @@ public class Item implements Serializable {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getAuthor() {
         return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public LocalDate getDate() {

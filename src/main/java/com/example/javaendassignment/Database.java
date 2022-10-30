@@ -28,13 +28,11 @@ public class Database {
     public void AddItem(Item item){
         items.add(item);
         writeItemsToFile();
-        //readItemsFromFile();
     }
 
     public void AddUser(User user){
         users.add(user);
         writeUsersToFile();
-        //readUsersFromFile();
     }
 
     public Item getItemByID(int id){
@@ -56,7 +54,10 @@ public class Database {
     }
 
     public Database() {
-
+        users.add(new User(generateNextID("user"), "J", "Jason", "Xie", "1", LocalDate.of(2000, 10,10)));
+        users.add(new User(generateNextID("user"), "David", "David", "Wu", "david123", LocalDate.of(2000, 10,10)));
+        items.add(new Item(generateNextID("item"), true, "Book1", "Author1"));
+        items.add(new Item(generateNextID("item"), true, "Book2", "Author2"));
     }
 
     public int generateNextID(String object){

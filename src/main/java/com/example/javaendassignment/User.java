@@ -6,7 +6,9 @@ import java.time.format.DateTimeFormatter;
 
 public class User implements Serializable {
 
-    private int id;
+    private static final long serialVersionUID = 1L;
+
+    private final int id;
     private String username;
 
     private String firstName;
@@ -17,10 +19,6 @@ public class User implements Serializable {
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getUsername() {
